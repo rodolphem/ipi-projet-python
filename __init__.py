@@ -2,7 +2,7 @@ from flask import Flask 		#importing Flask class from flask package to use flask
 app = Flask(__name__)			#instanciating imported flask class
 
 
-@app.route('/home')	
+@app.route('/home')				#this two décorator create 2 routes to return the same html code
 @app.route('/')					#flask class object ("app") decorator to change de function and generate HTML
 def hello():					#decorated function
 	return "Hello World"
