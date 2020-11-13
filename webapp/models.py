@@ -1,7 +1,13 @@
 from datetime import datetime 							# to use datetime functions
-from webapp import db 								# __main__ represent webapp file to avoid circulare import
+from webapp import db, login_manager 								#importing some instance from __init__.py
+from flask_login import UserMixin
 
-class User(db.Model):									#Create a Table named 'user' (in lowercase) inheriting from db.Model
+@login_manager.user_loader
+def load_user(user_id):
+	return User.query.get(user_id)
+
+
+class User(db.Model, UserMixin):									#Create a Table named 'user' (in lowercase) inheriting from db.Model
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), unique=True, nullable=False)
 	email = db.Column(db.String(120), unique=True, nullable=False)
@@ -21,4 +27,4 @@ class Post(db.Model):									#Create a Table named 'post' (in lowercase) inheri
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 	def __repr__(self):
-		return f"Post('{self.title}', '{self.date_posted}')"				#return the user's atributes
+		return f"Post('{self.title}', '{self.date_postjjed}')"				#return the user's atributes

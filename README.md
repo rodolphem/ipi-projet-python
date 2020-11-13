@@ -26,6 +26,10 @@ installation de sqlalchemy : pip install flask-sqlalchemy			(Pour la base de don
 
 installation de email validator : pip install email_validator 		(pour la vérification des email)
 
+installatiob de bcrypt : pip install flask-bcrypt					(pour le hashage de mot de passe)
+
+installation de login : pip install flask-login						(pour la gestion des sessions des utilisateurs)
+
 ###################### BDD ##################################
 
 Création de la base de données : avoir l'environnement virtuel activé et etre dans le dossier de l'application, ensuite ouvrire le terminal et lancer python, utilisé la commande 'from webapp import db', et db.create_all()

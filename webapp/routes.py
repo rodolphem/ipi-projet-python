@@ -1,7 +1,8 @@
-from flask import render_template, url_for, flash, redirect # import from flask some used
-from webapp import app
+from flask import render_template, url_for, flash, redirect, request # import from flask some used
+from webapp import app, db, bcrypt
 from webapp.forms import RegistrationForm, LoginForm			#importing form classes created in forms.py file in this same directory
-from webapp.models import User, Post 								#under db instanciation to avoid circulare import
+from webapp.models import User, Post
+from flask_login import login_user, current_user, logout_user, login_required			# to manage connexion 
 
 
 posts = [
@@ -33,22 +34,44 @@ def about():
 
 @app.route('/register', methods=['GET', 'POST'])			
 def register():
-	form = RegistrationForm()							#instanciating form class created in forms.py
-	if form.validate_on_submit():						#to know if the account is created or not
-		flash(f'Account created for {form.username.data}!', 'success')	#if the form is correctly validate then show this message "account created..."
-		return redirect (url_for('home'))								#and redirect to home page
+	if current_user.is_authenticated:
+		return redirect(url_for('home'))
+	form = RegistrationForm()																		#instanciating form class created in forms.py
+	if form.validate_on_submit():																	#to know if the account is created or not
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')			#hashing the password
+		user = User(username=form.username.data, email=form.email.data, password=hashed_password)	#Creating a User instaciation who contain information enter in the form variable
+		db.session.add(user)																		#Adding the user to be ready to be commit in the database
+		db.session.commit()																			#Add the data to the database
+		flash('Your account has been created! You are now able to log in', 'success')								#if the form is correctly validate then show this message "account created..."
+		return redirect (url_for('login'))															#and redirect to home page
 	return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])			
 def login():
+	if current_user.is_authenticated:
+		return redirect(url_for('home'))
 	form = LoginForm()
 	if form.validate_on_submit():
-		if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-			flash('You have been logged in!', 'success')
-			return redirect (url_for('home'))
+		user = User.query.filter_by(email=form.email.data).first()											#Check if the email is present in the database
+		if user and bcrypt.check_password_hash(user.password, form.password.data):							#Check if the user variable is present and if the password in the database is equal to the form password
+			login_user(user, remember=form.remember.data) 													#check if the user want the webapp to remember his password or no and connect him
+			next_page = request.args.get('next')
+			return redirect(next_page) if next_page else redirect(url_for('home')) 							#redirect automaticaly to the page we wanted to access after login if we can't access this page before
 		else:
-			flash('Login Unsuccessful. Please check username and password', 'danger')
+			flash('Login Unsuccessful. Please check your email and password', 'danger')
 
 	return render_template('login.html', title='Login', form=form)
+
+
+@app.route('/logout')																						#to disconnect the user and redirect to home page
+def logout():
+	logout_user()
+	return redirect(url_for('home'))
+
+
+@app.route('/account')
+@login_required																								# login is required to acces this page																		
+def account():
+	return render_template('account.html', title='Account')
 
