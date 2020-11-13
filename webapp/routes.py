@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request # import from flask some used
 from webapp import app, db, bcrypt
-from webapp.forms import RegistrationForm, LoginForm			#importing form classes created in forms.py file in this same directory
+from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm			#importing form classes created in forms.py file in this same directory
 from webapp.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required			# to manage connexion 
 
@@ -70,8 +70,19 @@ def logout():
 	return redirect(url_for('home'))
 
 
-@app.route('/account')
+@app.route('/account', methods=['GET', 'POST'])
 @login_required																								# login is required to acces this page																		
 def account():
-	return render_template('account.html', title='Account')
+	form = UpdateAccountForm()
+	if form.validate_on_submit():
+		current_user.username = form.username.data
+		current_user.email = form.email.data
+		db.session.commit()
+		flash('Your account has been updated', 'success')
+		return redirect(url_for('account'))
+	elif request.method == 'GET':								#to write current user's informations when we go to the profile page
+		form.username.data = current_user.username
+		form.email.data = current_user.email
+	image_file = url_for('static', filename='profile_pics/' + current_user.image_file) 						# Create a variable containing the profile pic of the user
+	return render_template('account.html', title='Account', image_file=image_file, form=form)
 
