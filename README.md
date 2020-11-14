@@ -30,6 +30,8 @@ installatiob de bcrypt : pip install flask-bcrypt					(pour le hashage de mot de
 
 installation de login : pip install flask-login						(pour la gestion des sessions des utilisateurs)
 
+installastion de Pillow : pip install Pillow 						(pour la redimension des images)
+
 ###################### BDD ##################################
 
 Création de la base de données : avoir l'environnement virtuel activé et etre dans le dossier de l'application, ensuite ouvrire le terminal et lancer python, utilisé la commande 'from webapp import db', et db.create_all()

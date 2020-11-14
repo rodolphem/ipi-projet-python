@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm #importing FlaskForm class to convert Python code in HTML forms
+from flask_wtf.file import FileField, FileAllowed 			#FileField to the image import field and FileAllowed to validate the type of file
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField  #allow us to use string fields and password fields in our forms
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError #allow us to verify if the field aren't empty, verify length and email
@@ -32,6 +33,7 @@ class LoginForm(FlaskForm): #Creating a class inheriting FlaskForm class (it's o
 class UpdateAccountForm(FlaskForm): #Creating a class inheriting FlaskForm class (it's our form)
 	username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])	   #We need to instanciate imported classes to create each different fields, the 'Username' variable is the label in the HTML page
 	email = StringField('Email', validators=[DataRequired(), Email()])
+	picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])]) 	#picture change field
 	submit = SubmitField('Update')
 
 	def validate_username(self, username):										#Verify if the username is already taken in the database

@@ -1,3 +1,6 @@
+import os 					#we use that to grab files extension
+import secrets 				# to generate a random token
+from PIL import Image		# to resize Image
 from flask import render_template, url_for, flash, redirect, request # import from flask some used
 from webapp import app, db, bcrypt
 from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm			#importing form classes created in forms.py file in this same directory
@@ -70,11 +73,28 @@ def logout():
 	return redirect(url_for('home'))
 
 
+def save_picture(form_picture): 															# function to save picture
+	random_hex = secrets.token_hex(8) 												#make a random token to use this as a name
+	_, f_ext = os.path.splitext(form_picture.filename) 								# grab the extension of the picture in parameter
+	picture_fn = random_hex + f_ext 												#make a filename for the picture with the random token and the file extension
+	picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)  # path to save picture : static/profile_pics directory
+	output_size = (125, 125) 			# choose a size
+	i = Image.open(form_picture)		# create an instance to resize the picture
+	i.thumbnail(output_size)			#resize the picture with the selected size
+
+	i.save(picture_path) 				#save the picture
+
+	return picture_fn  					# return the path name
+
+
 @app.route('/account', methods=['GET', 'POST'])
 @login_required																								# login is required to acces this page																		
 def account():
 	form = UpdateAccountForm()
 	if form.validate_on_submit():
+		if form.picture.data:     							#if a data is in the picture field
+			picture_file = save_picture(form.picture.data) #using the save_picture function coded before to save picture
+			current_user.image_files = picture_file        # /!\ supposed to change the image file in the database but don't work I don't know why  
 		current_user.username = form.username.data
 		current_user.email = form.email.data
 		db.session.commit()
