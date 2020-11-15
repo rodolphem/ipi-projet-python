@@ -2,12 +2,13 @@
 {% extends "layout.html" %}
 {#block content start, this block allows us to place this code inside the same block of the layout page#}
 {% block content %}
+	<h1>Questions</h1>
 	{% for question in questions %}
 		<article class="media content-section">
 			<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + question.author.image_file) }}">
 		  <div class="media-body">
 		    <div class="article-metadata">
-		      <a class="mr-2" href="#">{{ question.author.username }}</a>
+		      <a class="mr-2" href="{{ url_for('user_profile', id=question.author.id) }}">{{ question.author.username }}</a>
 		      <small class="text-muted">{{ question.date_posted.strftime('%Y-%m-%d') }}</small>
 		    </div>
 		    <h2><a class="article-title" href="#">{{ question.content }}</a></h2>

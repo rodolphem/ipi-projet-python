@@ -1,17 +1,17 @@
 import os 					#we use that to grab files extension
 import secrets 				# to generate a random token
 from PIL import Image		# to resize Image
-from flask import render_template, url_for, flash, redirect, request # import from flask some used
+from flask import render_template, url_for, flash, redirect, request 									# import from flask some used
 from webapp import app, db, bcrypt
-from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, QuestionForm		#importing form classes created in forms.py file in this same directory
+from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, QuestionForm, AnswerForm		#importing form classes created in forms.py file in this same directory
 from webapp.models import User, Questions
-from flask_login import login_user, current_user, logout_user, login_required			# to manage connexion 
+from flask_login import login_user, current_user, logout_user, login_required							# to manage connexion 
 
 
 
-@app.route('/home')										#this two décorator create 2 routes to return the same html code
-@app.route('/')											#flask class object ("app") decorator to change de function and generate HTML
-def home():												#decorated function
+@app.route('/home')												#this two décorator create 2 routes to return the same html code
+@app.route('/')													#flask class object ("app") decorator to change de function and generate HTML
+def home():														#decorated function
 	questions = Questions.query.all()
 	return render_template('home.html', questions=questions)    #return home.html and give it a variable posts
 
@@ -25,14 +25,14 @@ def about():
 def register():
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
-	form = RegistrationForm()																		#instanciating form class created in forms.py
-	if form.validate_on_submit():																	#to know if the account is created or not
-		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')			#hashing the password
-		user = User(username=form.username.data, email=form.email.data, password=hashed_password)	#Creating a User instaciation who contain information enter in the form variable
-		db.session.add(user)																		#Adding the user to be ready to be commit in the database
-		db.session.commit()																			#Add the data to the database
-		flash('Your account has been created! You are now able to log in', 'success')								#if the form is correctly validate then show this message "account created..."
-		return redirect (url_for('login'))															#and redirect to home page
+	form = RegistrationForm()																				#instanciating form class created in forms.py
+	if form.validate_on_submit():																			#to know if the account is created or not
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')					#hashing the password
+		user = User(username=form.username.data, email=form.email.data, password=hashed_password, points=0)	#Creating a User instaciation who contain information enter in the form variable
+		db.session.add(user)																				#Adding the user to be ready to be commit in the database
+		db.session.commit()																					#Add the data to the database
+		flash('Your account has been created! You are now able to log in', 'success')						#if the form is correctly validate then show this message "account created..."
+		return redirect (url_for('login'))																	#and redirect to home page
 	return render_template('register.html', title='Register', form=form)
 
 
@@ -53,17 +53,17 @@ def login():
 	return render_template('login.html', title='Login', form=form)
 
 
-@app.route('/logout')																						#to disconnect the user and redirect to home page
+@app.route('/logout')																#to disconnect the user and redirect to home page
 def logout():
 	logout_user()
 	return redirect(url_for('home'))
 
 
-def save_picture(form_picture): 															# function to save picture
+def save_picture(form_picture): 													# function to save picture
 	random_hex = secrets.token_hex(8) 												#make a random token to use this as a name
 	_, f_ext = os.path.splitext(form_picture.filename) 								# grab the extension of the picture in parameter
 	picture_fn = random_hex + f_ext 												#make a filename for the picture with the random token and the file extension
-	picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)  # path to save picture : static/profile_pics directory
+	picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)  	# path to save picture : static/profile_pics directory
 	output_size = (125, 125) 			# choose a size
 	i = Image.open(form_picture)		# create an instance to resize the picture
 	i.thumbnail(output_size)			#resize the picture with the selected size
@@ -74,7 +74,7 @@ def save_picture(form_picture): 															# function to save picture
 
 
 @app.route('/account', methods=['GET', 'POST'])
-@login_required																								# login is required to acces this page																		
+@login_required												# login is required to access this page																		
 def account():
 	form = UpdateAccountForm()
 	if form.validate_on_submit():
@@ -86,7 +86,7 @@ def account():
 		db.session.commit()
 		flash('Your account has been updated', 'success')
 		return redirect(url_for('account'))
-	elif request.method == 'GET':								#to write current user's informations when we go to the profile page
+	elif request.method == 'GET':																			#to write current user's informations when we go to the profile page
 		form.username.data = current_user.username
 		form.email.data = current_user.email
 	image_file = url_for('static', filename='profile_pics/' + current_user.image_file) 						# Create a variable containing the profile pic of the user
@@ -94,7 +94,7 @@ def account():
 
 
 @app.route('/question/new', methods=['GET', 'POST'])
-@login_required																						#to disconnect the user and redirect to home page
+@login_required																				
 def new_question():
 	form = QuestionForm()
 	if form.validate_on_submit():
@@ -106,9 +106,27 @@ def new_question():
 	return render_template('create_question.html', title='New Question', form=form)
 
 
-@app.route('/question/answer/<int:id>')
+@app.route('/question/answer/<int:id>', methods=['GET', 'POST'])  							# redirect to a page with the questiion's id
 @login_required
-def answer_question(id):
-	question = Questions.query.get(id)
-	return render_template('answer_question.html', question=question)
+def answer_question(id):  																	
+	question = Questions.query.get(id) 														# a query to get the id's question
+	form = AnswerForm() 																	#the form to answer this question
+	if form.validate_on_submit():
+		if form.answer.data == question.response:   										#if the answer is correct
+			flash('You good! you got '+ str(question.points) + ' points', 'success')    
+			current_user.points += question.points  										#add question's points to the user account
+			db.session.delete(question)    													#then delete the question
+			db.session.commit()    															#commit to database
+			return redirect(url_for('home'))  												#redirect to home page
+		else:
+			flash('You can retry', 'danger')
+	return render_template('answer_question.html', question=question, form=form)
+
+
+
+@app.route('/user/profile//<int:id>')																						
+def user_profile(id):
+	user = User.query.get(id) 
+	return render_template('user_profile.html', user=user)
+
 

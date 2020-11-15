@@ -11,5 +11,27 @@
 		    <p class="article-content">{{ question.points }} Points</p>
 		  </div>
 		</article>
-</article>
+		  <form method="POST" action="">
+			{{ form.hidden_tag() }}   															{#This line of code secure our form like the secure key#}
+			<fieldset class="form-group">
+				<div class="form-group">
+					{{ form.answer.label(class="form-control-label") }}
+
+					{% if form.answer.errors %} 												{#Look if they are errors in our field#}
+						{{ form.answer(class="form-control form-control-lg is-invalid") }} 	
+						<div class="invalid-feedback">
+							{% for error in form.answer.errors %}
+								<span>{{ error }}</span>										{# Display all current errors #}
+							{% endfor %}
+						</div>
+					{% else %}
+						{{ form.answer(class="form-control form-control-lg") }}
+					{% endif %}
+
+				</div>
+			</fieldset>
+			<div class="form-group">
+				{{ form.submit(class="btn btn-outline-info") }}
+			</div>
+		</form>
 {% endblock %}

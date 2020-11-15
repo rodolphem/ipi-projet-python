@@ -55,4 +55,8 @@ class QuestionForm(FlaskForm):
 	answer = StringField('Answer', validators=[DataRequired()])
 	submit = SubmitField('Ask Question')
 
+class AnswerForm(FlaskForm):
+	answer = StringField('Answer', validators=[DataRequired()])
+	submit = SubmitField('Answer Question')
+
 

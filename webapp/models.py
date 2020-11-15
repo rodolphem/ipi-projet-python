@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):									#Create a Table named 'user' (in lowerc
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
 	password = db.Column(db.String(60), nullable=False)
-	points = db.Column(db.Integer, default=0)
+	points = db.Column(db.Integer, nullable=False)
 	questions = db.relationship('Questions', backref='author', lazy=True)					#Define the relationship with the post (to make a foreign key in Post table)
 
 	def __repr__(self):
