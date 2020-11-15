@@ -1,6 +1,6 @@
 ################# DESCRIPTION DE L'APPLICATION #####################
 
-web app de questiob réponse,
+web app de question réponse,
 Inscription, connexion, déconnexion,
 Possibilité de créer des question avec une réponse,
 si les utilisateurs trouve la réponse il gagne des points sur le profil,
