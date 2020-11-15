@@ -12,7 +12,7 @@
 		    </div>
 		    <h2><a class="article-title" href="#">{{ question.content }}</a></h2>
 		    <p class="article-content">{{ question.points }} Points</p>
-		    <h3><a href="{{ url_for('respond_question', id=question.id) }}">Respond</a></h3>
+		    <h3><a href="{{ url_for('answer_question', id=question.id) }}">Answer</a></h3>
 		  </div>
 		</article>
 	{% endfor %}

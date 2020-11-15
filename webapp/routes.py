@@ -98,7 +98,7 @@ def account():
 def new_question():
 	form = QuestionForm()
 	if form.validate_on_submit():
-		question = Questions(content=form.content.data, response=form.response.data, points=form.points.data, author=current_user)
+		question = Questions(content=form.content.data, response=form.answer.data, points=form.points.data, author=current_user)
 		db.session.add(question)
 		db.session.commit()
 		flash('Your Question has been created', 'success')
@@ -106,9 +106,9 @@ def new_question():
 	return render_template('create_question.html', title='New Question', form=form)
 
 
-@app.route('/question/respond/<int:id>')
+@app.route('/question/answer/<int:id>')
 @login_required
-def respond_question(id):
+def answer_question(id):
 	question = Questions.query.get(id)
-	return render_template('respond_question.html', question=question)
+	return render_template('answer_question.html', question=question)
 

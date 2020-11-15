@@ -52,6 +52,7 @@ class UpdateAccountForm(FlaskForm): #Creating a class inheriting FlaskForm class
 class QuestionForm(FlaskForm):
 	content = StringField('Question', validators=[DataRequired()])
 	points = IntegerField('Number of Points', validators=[DataRequired()])
-	response = StringField('Response', validators=[DataRequired()])
+	answer = StringField('Answer', validators=[DataRequired()])
 	submit = SubmitField('Ask Question')
+
 
