@@ -7,6 +7,7 @@
 	    <div class="media-body">
 	      <h2 class="account-heading">{{ current_user.username }}</h2>					{# Display current user username using session #}
 	      <p class="text-secondary">{{ current_user.email }}</p>
+	      <h2 class="text-secondary">{{ current_user.points }} Points</h2>
 	    </div>
 	  </div>
 			<form method="POST" action="" enctype="multipart/form-data"> 				{# need a special encod type to support image #}

@@ -3,31 +3,17 @@ import secrets 				# to generate a random token
 from PIL import Image		# to resize Image
 from flask import render_template, url_for, flash, redirect, request # import from flask some used
 from webapp import app, db, bcrypt
-from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm			#importing form classes created in forms.py file in this same directory
-from webapp.models import User, Post
+from webapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, QuestionForm		#importing form classes created in forms.py file in this same directory
+from webapp.models import User, Questions
 from flask_login import login_user, current_user, logout_user, login_required			# to manage connexion 
 
-
-posts = [
-	{
-		'author': 'Corey schafer',
-		'title': 'Blog post 1',
-		'content': 'first post content',
-		'date': 'April 20, 2018'
-	},
-	{
-		'author': 'Jane Doe',
-		'title': 'Blog post 2',
-		'content': 'second post content',
-		'date': 'April 21, 2018'
-	}
-]
 
 
 @app.route('/home')										#this two décorator create 2 routes to return the same html code
 @app.route('/')											#flask class object ("app") decorator to change de function and generate HTML
 def home():												#decorated function
-	return render_template('home.html', posts=posts)    #return home.html and give it a variable posts
+	questions = Questions.query.all()
+	return render_template('home.html', questions=questions)    #return home.html and give it a variable posts
 
 
 @app.route('/about')			
@@ -105,4 +91,24 @@ def account():
 		form.email.data = current_user.email
 	image_file = url_for('static', filename='profile_pics/' + current_user.image_file) 						# Create a variable containing the profile pic of the user
 	return render_template('account.html', title='Account', image_file=image_file, form=form)
+
+
+@app.route('/question/new', methods=['GET', 'POST'])
+@login_required																						#to disconnect the user and redirect to home page
+def new_question():
+	form = QuestionForm()
+	if form.validate_on_submit():
+		question = Questions(content=form.content.data, response=form.response.data, points=form.points.data, author=current_user)
+		db.session.add(question)
+		db.session.commit()
+		flash('Your Question has been created', 'success')
+		return redirect(url_for('home'))
+	return render_template('create_question.html', title='New Question', form=form)
+
+
+@app.route('/question/respond/<int:id>')
+@login_required
+def respond_question(id):
+	question = Questions.query.get(id)
+	return render_template('respond_question.html', question=question)
 

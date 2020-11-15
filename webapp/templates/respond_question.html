@@ -1,8 +1,5 @@
-{#extends the layout page to use the doctype inside#}
 {% extends "layout.html" %}
-{#block content start, this block allows us to place this code inside the same block of the layout page#}
 {% block content %}
-	{% for question in questions %}
 		<article class="media content-section">
 			<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + question.author.image_file) }}">
 		  <div class="media-body">
@@ -12,8 +9,7 @@
 		    </div>
 		    <h2><a class="article-title" href="#">{{ question.content }}</a></h2>
 		    <p class="article-content">{{ question.points }} Points</p>
-		    <h3><a href="{{ url_for('respond_question', id=question.id) }}">Respond</a></h3>
 		  </div>
 		</article>
-	{% endfor %}
+</article>
 {% endblock %}
