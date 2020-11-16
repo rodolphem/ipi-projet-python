@@ -4,7 +4,6 @@
 {% block content %}
 	<h1>Questions</h1>
 	{% for question in questions %}
-		{% if question.author.id != current_user.id %}
 		<article class="media content-section">
 			<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + question.author.image_file) }}">
 		  <div class="media-body">
@@ -14,9 +13,12 @@
 		    </div>
 		    <h2><a class="article-title" href="#">{{ question.content }}</a></h2>
 		    <p class="article-content">{{ question.points }} Points</p>
+		    {% if question.author.id != current_user.id %}
 		    <h3><a href="{{ url_for('answer_question', id=question.id) }}">Answer</a></h3>
+		    {% else %}
+		    <p>/!\ Vous ne pouvez pas répondre à votre propre question /!\</p>
+		    {% endif %}
 		  </div>
 		</article>
-		{% endif %}
 	{% endfor %}
 {% endblock %}

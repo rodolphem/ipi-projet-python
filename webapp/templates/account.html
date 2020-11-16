@@ -56,5 +56,23 @@
 					{{ form.submit(class="btn btn-outline-info") }}
 				</div>
 			</form>
+			<h3>Vos questions</h3>
+			{% for question in questions %}
+			{% if question.author.id == current_user.id %}
+				<article class="media content-section">
+				  	<div class="media-body">
+					    <div class="article-metadata">
+					    <small class="text-muted">{{ question.date_posted.strftime('%Y-%m-%d') }}</small>
+					    </div>
+					    <p>Question : </p>
+					    <h3><a class="article-title" href="#">{{ question.content }}</a></h3>
+					    <p>Réponse : </p>
+					    <h3>{{ question.response }}</h3>
+					    <p class="article-content">{{ question.points }} Points</p>
+					</div>
+				</article>
+		    {% endif %}
+		    {% endfor %}
+
 	</div>
 {% endblock %}

@@ -76,6 +76,7 @@ def save_picture(form_picture): 													# function to save picture
 @app.route('/account', methods=['GET', 'POST'])
 @login_required												# login is required to access this page																		
 def account():
+	questions = Questions.query.all()
 	form = UpdateAccountForm()
 	if form.validate_on_submit():
 		if form.picture.data:     							#if a data is in the picture field
@@ -89,7 +90,7 @@ def account():
 		form.username.data = current_user.username
 		form.email.data = current_user.email
 	image_file = url_for('static', filename='profile_pics/' + current_user.image_file) 						# Create a variable containing the profile pic of the user
-	return render_template('account.html', title='Account', image_file=image_file, form=form)
+	return render_template('account.html', title='Account', image_file=image_file, form=form, questions=questions)
 
 
 @app.route('/question/new', methods=['GET', 'POST'])
