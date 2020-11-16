@@ -80,8 +80,7 @@ def account():
 	if form.validate_on_submit():
 		if form.picture.data:     							#if a data is in the picture field
 			picture_file = save_picture(form.picture.data) #using the save_picture function coded before to save picture
-			current_user.image_files = picture_file        # /!\ supposed to change the image file in the database but don't work I don't know why  
-		current_user.username = form.username.data
+			current_user.image_file = picture_file        # Save the picture path to the current user image_file column in the database
 		current_user.email = form.email.data
 		db.session.commit()
 		flash('Your account has been updated', 'success')
