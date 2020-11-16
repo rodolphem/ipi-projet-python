@@ -1,3 +1,3 @@
 __pycache__/
 .DS_Store
-site.db
+/webapp/site.db
