@@ -1,3 +1,7 @@
+LE PROJET SE SITUE FINI SUR LA BRANCHE MASTER
+
+
+
 ################# DESCRIPTION DE L'APPLICATION #####################
 
 web app de question réponse,
