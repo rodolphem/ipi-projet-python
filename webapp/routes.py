@@ -28,10 +28,12 @@ def register():
 	form = RegistrationForm()																				#instanciating form class created in forms.py
 	if form.validate_on_submit():																			#to know if the account is created or not
 		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')					#hashing the password
-		user = User(username=form.username.data, email=form.email.data, password=hashed_password, points=0)	#Creating a User instaciation who contain information enter in the form variable
+		user = User(username=form.username.data, email=form.email.data,
+					 password=hashed_password, points=0)	#Creating a User instaciation who contain information enter in the form variable
 		db.session.add(user)																				#Adding the user to be ready to be commit in the database
 		db.session.commit()																					#Add the data to the database
-		flash('Your account has been created! You are now able to log in', 'success')						#if the form is correctly validate then show this message "account created..."
+		flash('Your account has been created! You are now able to log in'
+				, 'success')						#if the form is correctly validate then show this message "account created..."
 		return redirect (url_for('login'))																	#and redirect to home page
 	return render_template('register.html', title='Register', form=form)
 
@@ -90,7 +92,8 @@ def account():
 		form.username.data = current_user.username
 		form.email.data = current_user.email
 	image_file = url_for('static', filename='profile_pics/' + current_user.image_file) 						# Create a variable containing the profile pic of the user
-	return render_template('account.html', title='Account', image_file=image_file, form=form, questions=questions)
+	return render_template('account.html', title='Account', image_file=image_file,
+							 form=form, questions=questions)
 
 
 @app.route('/question/new', methods=['GET', 'POST'])
@@ -98,7 +101,8 @@ def account():
 def new_question():
 	form = QuestionForm()
 	if form.validate_on_submit():
-		question = Questions(content=form.content.data, response=form.answer.data, points=form.points.data, author=current_user)
+		question = Questions(content=form.content.data, response=form.answer.data,
+							 points=form.points.data, author=current_user)
 		db.session.add(question)
 		db.session.commit()
 		flash('Your Question has been created', 'success')

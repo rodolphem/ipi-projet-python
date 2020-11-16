@@ -5,11 +5,12 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Integ
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError#allow us to verify if the field aren't empty, verify length and email
 from webapp.models import User
 
-class RegistrationForm(FlaskForm): #Creating a class inheriting FlaskForm class (it's our form)
+class RegistrationForm(FlaskForm): 															   #Creating a class inheriting FlaskForm class (it's our form)
 	username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])	   #We need to instanciate imported classes to create each different fields, the 'Username' variable is the label in the HTML page
 	email = StringField('Email', validators=[DataRequired(), Email()])
 	password = PasswordField('Password', validators=[DataRequired()])
-	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(),
+									 EqualTo('password')])
 	submit = SubmitField('Sign Up')
 
 	def validate_username(self, username):										#Verify if the username is already taken in the database
